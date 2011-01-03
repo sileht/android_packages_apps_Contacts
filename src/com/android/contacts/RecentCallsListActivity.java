@@ -291,33 +291,26 @@ public class RecentCallsListActivity extends ListActivity
         private CharArrayBuffer mBuffer2 = new CharArrayBuffer(128);
 
         public void onClick(View view) {
-<<<<<<< HEAD
             if (view instanceof QuickContactBadge) {
                 PhotoInfo info = (PhotoInfo)view.getTag();
                 QuickContact.showQuickContact(mContext, view, info.contactUri, QuickContact.MODE_MEDIUM, null);
                 isQuickContact = true;
             }
             else {
-                String number = (String) view.getTag();
-                if (!TextUtils.isEmpty(number)) {
-                    Uri telUri = Uri.fromParts("tel", number, null);
-                    startActivity(new Intent(Intent.ACTION_CALL_PRIVILEGED, telUri));
-                }
-=======
-            String number = (String) view.getTag();
-            if (!TextUtils.isEmpty(number)) {
-                // Here, "number" can either be a PSTN phone number or a
-                // SIP address.  So turn it into either a tel: URI or a
-                // sip: URI, as appropriate.
-                Uri callUri;
-                if (PhoneNumberUtils.isUriNumber(number)) {
-                    callUri = Uri.fromParts("sip", number, null);
-                } else {
-                    callUri = Uri.fromParts("tel", number, null);
-                }
-                StickyTabs.saveTab(RecentCallsListActivity.this, getIntent());
-                startActivity(new Intent(Intent.ACTION_CALL_PRIVILEGED, callUri));
->>>>>>> korg/gingerbread
+            	String number = (String) view.getTag();
+            	if (!TextUtils.isEmpty(number)) {
+                	// Here, "number" can either be a PSTN phone number or a
+                	// SIP address.  So turn it into either a tel: URI or a
+                	// sip: URI, as appropriate.
+                	Uri callUri;
+                	if (PhoneNumberUtils.isUriNumber(number)) {
+                    	callUri = Uri.fromParts("sip", number, null);
+                	} else {
+                    	callUri = Uri.fromParts("tel", number, null);
+                	}
+                	StickyTabs.saveTab(RecentCallsListActivity.this, getIntent());
+                	startActivity(new Intent(Intent.ACTION_CALL_PRIVILEGED, callUri));
+				}
             }
         }
 
@@ -451,33 +444,7 @@ public class RecentCallsListActivity extends ListActivity
             if (info != null && info != ContactInfo.EMPTY) {
                 return true;
             } else {
-<<<<<<< HEAD
-                Cursor phonesCursor =
-                    RecentCallsListActivity.this.getContentResolver().query(
-                            Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI,
-                                    Uri.encode(ciq.number)),
-                    PHONES_PROJECTION, null, null, null);
-                if (phonesCursor != null) {
-                    if (phonesCursor.moveToFirst()) {
-                        info = new ContactInfo();
-                        info.personId = phonesCursor.getLong(PERSON_ID_COLUMN_INDEX);
-                        info.name = phonesCursor.getString(NAME_COLUMN_INDEX);
-                        info.type = phonesCursor.getInt(PHONE_TYPE_COLUMN_INDEX);
-                        info.label = phonesCursor.getString(LABEL_COLUMN_INDEX);
-                        info.number = phonesCursor.getString(MATCHED_NUMBER_COLUMN_INDEX);
-                        
-                        //Wysie: Contact pictures
-                        info.photoId = phonesCursor.getLong(PHOTO_ID_COLUMN_INDEX);
-                        info.lookupKey = phonesCursor.getString(LOOKUP_KEY_COLUMN_INDEX);
 
-                        // New incoming phone number invalidates our formatted
-                        // cache. Any cache fills happen only on the GUI thread.
-                        info.formattedNumber = null;
-
-                        mContactInfo.put(ciq.number, info);
-                        // Inform list to update this item, if in view
-                        needNotify = true;
-=======
                 // Ok, do a fresh Contacts lookup for ciq.number.
                 boolean infoUpdated = false;
 
@@ -539,6 +506,10 @@ public class RecentCallsListActivity extends ListActivity
                             info.number = dataTableCursor.getString(
                                     dataTableCursor.getColumnIndex(Data.DATA1));
 
+                        	//Wysie: Contact pictures
+                        	info.photoId =  dataTableCursor.getLong(dataTableCursor.getColumnIndex(Data.PHOTO_ID));
+                        	info.lookupKey =  dataTableCursor.getString(dataTableCursor.getColumnIndex(Data.LOOKUP_KEY));
+
                             infoUpdated = true;
                         }
                         dataTableCursor.close();
@@ -559,11 +530,14 @@ public class RecentCallsListActivity extends ListActivity
                             info.type = phonesCursor.getInt(PHONE_TYPE_COLUMN_INDEX);
                             info.label = phonesCursor.getString(LABEL_COLUMN_INDEX);
                             info.number = phonesCursor.getString(MATCHED_NUMBER_COLUMN_INDEX);
+                        	
+                        	//Wysie: Contact pictures
+                        	info.photoId = phonesCursor.getLong(PHOTO_ID_COLUMN_INDEX);
+                        	info.lookupKey = phonesCursor.getString(LOOKUP_KEY_COLUMN_INDEX);
 
                             infoUpdated = true;
                         }
                         phonesCursor.close();
->>>>>>> korg/gingerbread
                     }
                 }
 
@@ -823,9 +797,6 @@ public class RecentCallsListActivity extends ListActivity
             if (!TextUtils.isEmpty(name)) {
                 views.line1View.setText(name);
                 views.labelView.setVisibility(View.VISIBLE);
-<<<<<<< HEAD
-                CharSequence numberLabel = Phone.getTypeLabel(context.getResources(), ntype, label);
-=======
 
                 // "type" and "label" are currently unused for SIP addresses.
                 CharSequence numberLabel = null;
@@ -833,7 +804,6 @@ public class RecentCallsListActivity extends ListActivity
                     numberLabel = Phone.getDisplayLabel(context, ntype, label,
                             mLabelArray);
                 }
->>>>>>> korg/gingerbread
                 views.numberView.setVisibility(View.VISIBLE);
                 views.numberView.setText(formattedNumber);
                 if (!TextUtils.isEmpty(numberLabel)) {
@@ -1049,9 +1019,7 @@ public class RecentCallsListActivity extends ListActivity
                 final RecentCallsListActivity.RecentCallsAdapter callsAdapter = activity.mAdapter;
                 callsAdapter.setLoading(false);
                 callsAdapter.changeCursor(cursor);
-<<<<<<< HEAD
                 mRecordCount = cursor.getCount();
-=======
                 if (activity.mScrollToTop) {
                     if (activity.mList.getFirstVisiblePosition() > 5) {
                         activity.mList.setSelection(5);
@@ -1059,7 +1027,6 @@ public class RecentCallsListActivity extends ListActivity
                     activity.mList.smoothScrollToPosition(0);
                     activity.mScrollToTop = false;
                 }
->>>>>>> korg/gingerbread
             } else {
                 cursor.close();
             }
@@ -1376,18 +1343,19 @@ public class RecentCallsListActivity extends ListActivity
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+		// Convert the menu info to the proper type
+        AdapterView.AdapterContextMenuInfo menuInfo;
+        try {
+                menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        } catch (ClassCastException e) {
+            Log.e(TAG, "bad menuInfoIn", e);
+            return false;
+        }
+
+        Cursor cursor = (Cursor)mAdapter.getItem(menuInfo.position);
+
         switch (item.getItemId()) {
             case CONTEXT_MENU_ITEM_DELETE: {
-                // Convert the menu info to the proper type
-                AdapterView.AdapterContextMenuInfo menuInfo;
-                try {
-                     menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-                } catch (ClassCastException e) {
-                    Log.e(TAG, "bad menuInfoIn", e);
-                    return false;
-                }
-
-                Cursor cursor = (Cursor)mAdapter.getItem(menuInfo.position);
                 int groupSize = 1;
                 if (mAdapter.isGroupHeader(menuInfo.position)) {
                     groupSize = mAdapter.getGroupSize(menuInfo.position);
@@ -1405,23 +1373,21 @@ public class RecentCallsListActivity extends ListActivity
 
                 getContentResolver().delete(Calls.CONTENT_URI, Calls._ID + " IN (" + sb + ")",
                         null);
-				break;
             }
+				break;
 		    case MENU_ITEM_BLACKLIST: {
 		    	Intent intent = new Intent(INSERT_BLACKLIST);
 				intent.putExtra("Insert.BLACKLIST", cursor.getString(NUMBER_COLUMN_INDEX));
 				sendBroadcast(intent);
-				break;
 			}
+				break;
             case CONTEXT_MENU_CALL_CONTACT: {
                 StickyTabs.saveTab(this, getIntent());
                 startActivity(item.getIntent());
                 return true;
             }
-            default: {
-                return super.onContextItemSelected(item);
-            }
         }
+        return super.onContextItemSelected(item);
     }
 
     @Override
