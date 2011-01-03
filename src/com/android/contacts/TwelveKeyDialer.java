@@ -319,6 +319,7 @@ public class TwelveKeyDialer extends Activity implements View.OnClickListener,
         if (Intent.ACTION_DIAL.equals(action) || Intent.ACTION_VIEW.equals(action)) {
             // see if we are "adding a call" from the InCallScreen; false by default.
             mIsAddCallMode = intent.getBooleanExtra(ADD_CALL_MODE_KEY, false);
+
             Uri uri = intent.getData();
             if (uri != null) {
                 if ("tel".equals(uri.getScheme())) {
@@ -340,6 +341,16 @@ public class TwelveKeyDialer extends Activity implements View.OnClickListener,
                             c.close();
                         }
                     }
+                }
+            } else {
+                // ACTION_DIAL or ACTION_VIEW with no data.
+                // This behaves basically like ACTION_MAIN: If there's
+                // already an active call, bring up an intermediate UI to
+                // make the user confirm what they really want to do.
+                // Be sure *not* to show the dialpad chooser if this is an
+                // explicit "Add call" action, though.
+                if (!mIsAddCallMode && phoneIsInUse()) {
+                    needToShowDialpadChooser = true;
                 }
             }
         } else if (Intent.ACTION_MAIN.equals(action)) {
@@ -858,6 +869,7 @@ public class TwelveKeyDialer extends Activity implements View.OnClickListener,
     }
     /*
     void callVoicemail() {
+        StickyTabs.saveTab(this, getIntent());
         Intent intent = new Intent(Intent.ACTION_CALL_PRIVILEGED,
                 Uri.fromParts("voicemail", EMPTY_NUMBER, null));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -917,6 +929,7 @@ public class TwelveKeyDialer extends Activity implements View.OnClickListener,
             intent.setData(Uri.fromParts("tel", number, null));
         }
 
+        StickyTabs.saveTab(this, getIntent());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         mDigits.getText().clear();

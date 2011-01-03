@@ -16,6 +16,7 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="sharedUserLabel" msgid="7965035505237135241">"Android Core Apps"</string>
     <string name="contactsList" msgid="8661624236494819731">"Kontakte"</string>
     <string name="launcherDialer" msgid="8636288196618486553">"Telefon"</string>
     <string name="shortcutContact" msgid="749243779392912958">"Kontakt"</string>
@@ -70,6 +71,7 @@
     <string name="editContact_title_insert" msgid="9125600232291405757">"Neuer Kontakt"</string>
     <string name="label_phonetic_name" msgid="2288082649573927286">"Phonetisch"</string>
     <string name="label_notes" msgid="8337354953278341042">"Notizen"</string>
+    <string name="label_sip_address" msgid="124073911714324974">"Internetanruf"</string>
     <string name="label_ringtone" msgid="8833166825330686244">"Klingelton"</string>
     <string name="ghostData_name" msgid="6490954238641157585">"Vor- und Nachname"</string>
     <string name="ghostData_phonetic_name" msgid="7852749081984070902">"Phonetischer Name"</string>
@@ -139,11 +141,11 @@
     <string name="liveFolderPhone" msgid="3739376066610926780">"Kontakte mit Telefonnummern"</string>
     <string name="menu_sendTextMessage" msgid="6937343460284499306">"Textnachricht senden"</string>
     <string name="recentCalls_callNumber" msgid="1756372533999226126">"<xliff:g id="NAME">%s</xliff:g> anrufen"</string>
-    <string name="recentCalls_editNumberBeforeCall" msgid="7756171675833267857">"Nummer vor Anruf bearbeiten"</string>
 
     <!--Menu item used to add a number from the call log to Blacklist  -->
     <string name="recentCalls_addToBlacklist">Zur Blacklist hinzufügen</string>
 
+    <string name="recentCalls_editNumberBeforeCall" msgid="7756171675833267857">"Nr. vor Anruf bearbeiten"</string>
     <string name="recentCalls_addToContact" msgid="1429899535546487008">"Zu Kontakten hinzufügen"</string>
     <string name="recentCalls_removeFromRecentList" msgid="401662244636511330">"Aus Anrufliste entfernen"</string>
     <string name="recentCalls_deleteAll" msgid="6352364392762163704">"Anrufliste löschen"</string>
@@ -162,11 +164,11 @@
     <string name="simContacts_title" msgid="27341688347689769">"Kontakte auf SIM-Karte"</string>
     <string name="noContactsHelpTextWithSyncForCreateShortcut" msgid="801504710275614594">"Sie haben keine Kontakte. Wenn Sie gerade ein Konto hinzugefügt haben, kann die Synchronisierung der Kontakte einige Minuten dauern."</string>
     <string name="noContactsHelpTextForCreateShortcut" msgid="3081286388667108335">"Sie haben keine Kontakte."</string>
-    <string name="noContactsHelpText" msgid="6788487368878712350">"Es sind keine Kontakte vorhanden."\n\n"Drücken Sie zum Hinzufügen von Kontakten die "<font fgcolor="#ffffffff"><b>"Menütaste"</b></font>" und tippen Sie anschließend auf "\n" "\n<li><font fgcolor="#ffffffff"><b>"Konten"</b></font>", um ein Konto mit Kontakten, die Sie mit dem Telefon synchronisieren möchten, hinzuzufügen oder zu konfigurieren."\n</li>" "\n<li><font fgcolor="#ffffffff"><b>"Neuer Kontakt"</b></font>", um einen neuen Kontakt von Grund auf zu erstellen."\n</li>\n<li><font fgcolor="#ffffffff"><b>"Importieren/Exportieren"</b></font>\n</li></string>
+    <string name="noContactsHelpText" msgid="6788487368878712350">"Es sind keine Kontakte vorhanden."\n\n"Drücken Sie zum Hinzufügen von Kontakten die "<font fgcolor="#ffffffff"><b>"Menütaste"</b></font>" und berühren Sie anschließend "\n" "\n<li><font fgcolor="#ffffffff"><b>"Konten"</b></font>", um ein Konto mit Kontakten, die Sie mit dem Telefon synchronisieren möchten, hinzuzufügen oder zu konfigurieren."\n</li>" "\n<li><font fgcolor="#ffffffff"><b>"Neuer Kontakt"</b></font>", um einen neuen Kontakt von Grund auf zu erstellen."\n</li>\n<li><font fgcolor="#ffffffff"><b>"Importieren/Exportieren"</b></font>\n</li></string>
     <string name="noContactsHelpTextWithSync" msgid="3734101165712848179">"Es sind keine Kontakte vorhanden. Wenn Sie gerade ein Konto hinzugefügt haben, kann es einige Minuten dauern, bis die Kontakte synchronisiert sind."\n\n"Drücken Sie zum Hinzufügen von Kontakten die "<font fgcolor="#ffffffff"><b>"Menütaste"</b></font>" und tippen Sie anschließend auf "\n" "\n<li><font fgcolor="#ffffffff"><b>"Konten"</b></font>", um ein Konto mit Kontakten, die Sie mit dem Telefon synchronisieren möchten, hinzuzufügen oder zu konfigurieren."\n" "</li>\n<li><font fgcolor="#ffffffff"><b>"Anzeigeoptionen"</b></font>", um zu ändern, welche Kontakte angezeigt werden."\n</li>" "\n<li><font fgcolor="#ffffffff"><b>"Neuer Kontakt"</b></font>", um einen neuen Kontakt von Grund auf zu erstellen."\n</li>" "\n<li><font fgcolor="#ffffffff"><b>"Importieren/Exportieren"</b></font>\n</li></string>
-    <string name="noContactsNoSimHelpText" msgid="6553845386917463292">"Es sind keine Kontakte vorhanden."\n\n"Drücken Sie zum Hinzufügen von Kontakten die "<font fgcolor="#ffffffff"><b>"Menütaste"</b></font>" und tippen Sie anschließend auf "\n" "\n<li><font fgcolor="#ffffffff"><b>"Konten"</b></font>", um ein Konto mit Kontakten, die Sie mit dem Telefon synchronisieren möchten, hinzuzufügen oder zu konfigurieren."\n</li>" "\n<li><font fgcolor="#ffffffff"><b>"Neuer Kontakt"</b></font>", um einen neuen Kontakt von Grund auf zu erstellen."\n</li>\n<li><font fgcolor="#ffffffff"><b>"Importieren/Exportieren"</b></font>\n</li></string>
-    <string name="noContactsNoSimHelpTextWithSync" msgid="1122296298361373488">"Es sind keine Kontakte vorhanden. Wenn Sie gerade ein Konto hinzugefügt haben, kann es einige Minuten dauern, bis die Kontakte synchronisiert sind."\n\n"Drücken Sie zum Hinzufügen von Kontakten die "<font fgcolor="#ffffffff"><b>"Menütaste"</b></font>" und tippen Sie anschließend auf "\n" "\n<li><font fgcolor="#ffffffff"><b>"Konten"</b></font>", um ein Konto mit Kontakten, die Sie mit dem Telefon synchronisieren möchten, hinzuzufügen oder zu konfigurieren."\n</li>" "\n<li><font fgcolor="#ffffffff"><b>"Anzeigeoptionen"</b></font>", um zu ändern, welche Kontakte angezeigt werden."\n</li>\n<li><font fgcolor="#ffffffff"><b>"Neuer Kontakt"</b></font>", um einen neuen Kontakt von Grund auf zu erstellen."\n</li>" "\n<li><font fgcolor="#ffffffff"><b>"Importieren/Exportieren"</b></font>\n</li></string>
-    <string name="noFavoritesHelpText" msgid="3744655776704833277">"Es sind keine Favoriten vorhanden."\n\n"So fügen Sie einen Kontakt zu Ihrer Favoritenliste hinzu:"\n\n"        "<li>"Tippen Sie auf den Tab "<b>"Kontakte"</b>"."\n</li>" "\n<li>"Tippen Sie auf den Kontakt, den Sie zu Ihren Favoriten hinzufügen möchten."\n</li>" "\n<li>"Tippen Sie auf die Markierung neben dem Kontaktnamen."\n</li></string>
+    <string name="noContactsNoSimHelpText" msgid="6553845386917463292">"Es sind keine Kontakte vorhanden."\n\n"Drücken Sie zum Hinzufügen von Kontakten die "<font fgcolor="#ffffffff"><b>"Menütaste"</b></font>" und berühren Sie anschließend "\n" "\n<li><font fgcolor="#ffffffff"><b>"Konten"</b></font>", um ein Konto mit Kontakten, die Sie mit dem Telefon synchronisieren möchten, hinzuzufügen oder zu konfigurieren."\n</li>" "\n<li><font fgcolor="#ffffffff"><b>"Neuer Kontakt"</b></font>", um einen neuen Kontakt von Grund auf zu erstellen."\n</li>\n<li><font fgcolor="#ffffffff"><b>"Importieren/Exportieren"</b></font>\n</li></string>
+    <string name="noContactsNoSimHelpTextWithSync" msgid="1122296298361373488">"Es sind keine Kontakte vorhanden. Wenn Sie gerade ein Konto hinzugefügt haben, kann es einige Minuten dauern, bis die Kontakte synchronisiert sind."\n\n"Drücken Sie zum Hinzufügen von Kontakten die "<font fgcolor="#ffffffff"><b>"Menütaste"</b></font>" und berühren Sie anschließend "\n" "\n<li><font fgcolor="#ffffffff"><b>"Konten"</b></font>", um ein Konto mit Kontakten, die Sie mit dem Telefon synchronisieren möchten, hinzuzufügen oder zu konfigurieren."\n</li>" "\n<li><font fgcolor="#ffffffff"><b>"Anzeigeoptionen"</b></font>", um zu ändern, welche Kontakte angezeigt werden."\n</li>\n<li><font fgcolor="#ffffffff"><b>"Neuer Kontakt"</b></font>", um einen neuen Kontakt von Grund auf zu erstellen."\n</li>" "\n<li><font fgcolor="#ffffffff"><b>"Importieren/Exportieren"</b></font>\n</li></string>
+    <string name="noFavoritesHelpText" msgid="3744655776704833277">"Es sind keine Favoriten vorhanden."\n\n"So fügen Sie einen Kontakt zu Ihrer Favoritenliste hinzu:"\n\n" "<li>"Berühren Sie den Tab "<b>"Kontakte"</b>"."\n</li>" "\n<li>"Berühren Sie den Kontakt, den Sie zu Ihren Favoriten hinzufügen möchten."\n</li>" "\n<li>"Berühren Sie den Stern neben dem Kontaktnamen."\n</li></string>
     <string name="liveFolder_all_label" msgid="5961411940473276616">"Alle Kontakte"</string>
     <string name="liveFolder_favorites_label" msgid="2674341514070517105">"Markiert"</string>
     <string name="liveFolder_phones_label" msgid="1709786878793436245">"Nummern"</string>
@@ -177,7 +179,7 @@
     <string name="toast_call_detail_error" msgid="7200975244804730096">"Details für den angeforderten Anruf konnten nicht gelesen werden."</string>
     <string name="type_incoming" msgid="6502076603836088532">"Eingehender Anruf"</string>
     <string name="type_outgoing" msgid="343108709599392641">"Ausgehender Anruf"</string>
-    <string name="type_missed" msgid="2720502601640509542">"Verpasster Anruf"</string>
+    <string name="type_missed" msgid="2720502601640509542">"Entgangener Anruf"</string>
     <string name="actionIncomingCall" msgid="6028930669817038600">"Eingehende Anrufe"</string>
     <string name="callBack" msgid="5498224409038809224">"Rückruf"</string>
     <string name="callAgain" msgid="3197312117049874778">"Erneut anrufen"</string>
@@ -206,23 +208,31 @@
     <string name="description_contact_photo" msgid="3387458082667894062">"Kontaktbild"</string>
     <string name="description_minus_button" msgid="387136707700230172">"minus"</string>
     <string name="description_plus_button" msgid="515164827856229880">"plus"</string>
-    <string name="no_sdcard_title" msgid="5911758680339949273">"Keine SD-Karte"</string>
-    <string name="no_sdcard_message" msgid="6019391476490445358">"Keine SD-Karte gefunden"</string>
+    <string name="no_sdcard_title" product="nosdcard" msgid="5362631473262100989">"USB-Speicher nicht verfügbar"</string>
+    <string name="no_sdcard_title" product="default" msgid="5911758680339949273">"Keine SD-Karte"</string>
+    <string name="no_sdcard_message" product="nosdcard" msgid="8045830739790534254">"Keinen USB-Speicher gefunden"</string>
+    <string name="no_sdcard_message" product="default" msgid="6019391476490445358">"Keine SD-Karte gefunden"</string>
     <string name="searching_vcard_title" msgid="4970508055399376813">"vCard wird gesucht."</string>
     <string name="import_from_sim" msgid="3859272228033941659">"Von SIM-Karte importieren"</string>
-    <string name="import_from_sdcard" msgid="8550360976693202816">"Von SD-Karte importieren"</string>
-    <string name="export_to_sdcard" msgid="2597105442616166277">"Auf SD-Karte exportieren"</string>
+    <string name="import_from_sdcard" product="nosdcard" msgid="8294728696808674154">"Aus USB-Speicher import."</string>
+    <string name="import_from_sdcard" product="default" msgid="8550360976693202816">"Von SD-Karte importieren"</string>
+    <string name="export_to_sdcard" product="nosdcard" msgid="7201274701382901259">"In USB-Speicher exportieren"</string>
+    <string name="export_to_sdcard" product="default" msgid="2597105442616166277">"An SD-Karte exportieren"</string>
     <string name="share_visible_contacts" msgid="890150378880783797">"Sichtbare Kontakte weiterleiten"</string>
     <string name="import_one_vcard_string" msgid="9059163467020328433">"Eine VCard-Datei importieren"</string>
     <string name="import_multiple_vcard_string" msgid="3810226492811062392">"Mehrere VCard-Dateien importieren"</string>
     <string name="import_all_vcard_string" msgid="5518136113853448474">"Alle VCard-Dateien importieren"</string>
-    <string name="searching_vcard_message" msgid="6917522333561434546">"Suche nach einer vCard-Information auf der SD-Karte"</string>
-    <string name="scanning_sdcard_failed_title" msgid="3506782007953167180">"Fehler beim Lesen der SD-Karte"</string>
-    <string name="scanning_sdcard_failed_message" msgid="3761992500690182922">"Fehler beim Lesen der SD-Karte. Grund: \"<xliff:g id="FAIL_REASON">%s</xliff:g>\""</string>
+    <string name="searching_vcard_message" product="nosdcard" msgid="8214795338181412751">"Suche nach vCard-Daten in USB-Speicher"</string>
+    <string name="searching_vcard_message" product="default" msgid="6917522333561434546">"Suche nach einer vCard-Information auf der SD-Karte"</string>
+    <string name="scanning_sdcard_failed_title" product="nosdcard" msgid="7447077516493667568">"Scannen des USB-Speichers fehlgeschlagen"</string>
+    <string name="scanning_sdcard_failed_title" product="default" msgid="3506782007953167180">"Fehler beim Lesen der SD-Karte"</string>
+    <string name="scanning_sdcard_failed_message" product="nosdcard" msgid="5645544323676912703">"Scannen des USB-Speichers fehlgeschlagen. Grund: \"<xliff:g id="FAIL_REASON">%s</xliff:g>\""</string>
+    <string name="scanning_sdcard_failed_message" product="default" msgid="3761992500690182922">"Fehler beim Lesen der SD-Karte. Grund: \"<xliff:g id="FAIL_REASON">%s</xliff:g>\""</string>
     <string name="fail_reason_io_error" msgid="5922864781066136340">"E/A-Fehler"</string>
     <string name="fail_reason_vcard_parse_error" msgid="1201233722762680214">"Die vCard konnte aus einem unbekannten Grund nicht geparst werden."</string>
     <string name="fail_reason_vcard_not_supported_error" msgid="655208100451286027">"Beim Parsen der vCard ist ein Fehler aufgetreten. Obwohl die vCard anscheinend ein gültiges Format aufweist, wird sie von der aktuellen Implementierung nicht unterstützt."</string>
-    <string name="fail_reason_no_vcard_file" msgid="6376516175882881595">"Keine VCard-Datei auf der SD-Karte gefunden"</string>
+    <string name="fail_reason_no_vcard_file" product="nosdcard" msgid="4231528180481838813">"Im USB-Speicher wurde keine vCard-Datei gefunden."</string>
+    <string name="fail_reason_no_vcard_file" product="default" msgid="6376516175882881595">"Keine VCard-Datei auf der SD-Karte gefunden"</string>
     <string name="fail_reason_failed_to_read_files" msgid="3659521123567134029">"Fehler beim Import einer oder mehrerer Dateien (%s)"</string>
     <string name="fail_reason_unknown" msgid="999034019513096768">"Unbekannter Fehler"</string>
     <string name="select_vcard_title" msgid="3968948173786172468">"vCard-Datei auswählen"</string>
@@ -237,7 +247,8 @@
     <string name="exporting_contact_failed_title" msgid="585823094820602526">"Fehler beim Exportieren von Kontaktdaten"</string>
     <string name="exporting_contact_failed_message" msgid="4151348002470298092">"Fehler beim Exportieren der Kontaktdaten."\n"Fehlerursache: \"<xliff:g id="FAIL_REASON">%s</xliff:g>\""</string>
     <string name="fail_reason_no_exportable_contact" msgid="4919714086648344495">"Es ist kein exportierbarer Kontakt vorhanden"</string>
-    <string name="fail_reason_too_many_vcard" msgid="7084146295639672658">"Zu viele vCard-Dateien auf der SD-Karte"</string>
+    <string name="fail_reason_too_many_vcard" product="nosdcard" msgid="2638638826954895225">"Zu viele vCard-Dateien im USB-Speicher"</string>
+    <string name="fail_reason_too_many_vcard" product="default" msgid="7084146295639672658">"Zu viele vCard-Dateien auf der SD-Karte"</string>
     <string name="fail_reason_too_long_filename" msgid="1915716071321839166">"Erforderlicher Dateiname ist zu lang (\"<xliff:g id="FILENAME">%s</xliff:g>\")"</string>
     <string name="exporting_contact_list_title" msgid="9072240631534457415">"Kontaktdaten werden exportiert."</string>
     <string name="exporting_contact_list_message" msgid="5640326540405486055">"Kontaktdaten werden in \"<xliff:g id="FILE_NAME">%s</xliff:g>\" exportiert."</string>
@@ -287,13 +298,13 @@
     <string name="display_ungrouped" msgid="4602580795576261158">"Alle weiteren Kontakte"</string>
     <string name="display_all_contacts" msgid="6846131371214707956">"Alle Kontakte"</string>
     <string name="display_warn_remove_ungrouped" msgid="2314043155909167610">"Wenn \"<xliff:g id="GROUP">%s</xliff:g>\" aus der Synchronisierung entfernt wird, werden auch alle nicht gruppierten Kontakte aus der Synchronisierung entfernt."</string>
-    <string name="account_phone" msgid="4025734638492419713">"Nur Telefon (nicht synchronisiert)"</string>
+    <string name="account_phone" msgid="3682950835276226870">"Nur Telefon, nicht synchronisiert"</string>
     <string name="call_custom" msgid="7756571794763171802">"<xliff:g id="CUSTOM">%s</xliff:g> anrufen"</string>
     <string name="call_home" msgid="1990519474420545392">"Anruf (privat)"</string>
     <string name="call_mobile" msgid="7502236805487609178">"Anruf (mobil)"</string>
-    <string name="call_work" msgid="5328785911463744028">"Anruf (Arbeit)"</string>
-    <string name="call_fax_work" msgid="7467763592359059243">"Anruf (Fax, Arbeit)"</string>
-    <string name="call_fax_home" msgid="8342175628887571876">"Faxanruf (privat)"</string>
+    <string name="call_work" msgid="5328785911463744028">"Anruf (geschäftl.)"</string>
+    <string name="call_fax_work" msgid="7467763592359059243">"Anruf (Fax, geschäftl.)"</string>
+    <string name="call_fax_home" msgid="8342175628887571876">"Anruf Fax (privat)"</string>
     <string name="call_pager" msgid="9003902812293983281">"Anruf (Pager)"</string>
     <string name="call_other" msgid="8563753966926932052">"Anruf bei"</string>
     <string name="call_callback" msgid="1910165691349426858">"Rückrufnummer anrufen"</string>
@@ -305,16 +316,16 @@
     <string name="call_radio" msgid="8296755876398357063">"Anruf (Mobilfunk)"</string>
     <string name="call_telex" msgid="2223170774548648114">"Telexnummer anrufen"</string>
     <string name="call_tty_tdd" msgid="8951266948204379604">"TTY/TDD anrufen"</string>
-    <string name="call_work_mobile" msgid="8707874281430105394">"Mobilfunknummer (geschäftlich) anrufen"</string>
-    <string name="call_work_pager" msgid="3419348514157949008">"Pager (beruflich) anrufen"</string>
+    <string name="call_work_mobile" msgid="8707874281430105394">"Anruf Handy (geschäftl.)"</string>
+    <string name="call_work_pager" msgid="3419348514157949008">"Anruf Pager (geschäftl.)"</string>
     <string name="call_assistant" msgid="2141641383068514308">"<xliff:g id="ASSISTANT">%s</xliff:g> anrufen"</string>
     <string name="call_mms" msgid="6274041545876221437">"Anruf (MMS)"</string>
     <string name="sms_custom" msgid="5932736853732191825">"Text <xliff:g id="CUSTOM">%s</xliff:g>"</string>
-    <string name="sms_home" msgid="7524332261493162995">"Text (privat)"</string>
+    <string name="sms_home" msgid="7524332261493162995">"SMS (privat)"</string>
     <string name="sms_mobile" msgid="5200107250451030769">"Text (mobil)"</string>
-    <string name="sms_work" msgid="2269624156655267740">"Text (Arbeit)"</string>
-    <string name="sms_fax_work" msgid="8028189067816907075">"Text (Fax, Arbeit)"</string>
-    <string name="sms_fax_home" msgid="9204042076306809634">"Text (Fax, privat)"</string>
+    <string name="sms_work" msgid="2269624156655267740">"SMS (geschäftl.)"</string>
+    <string name="sms_fax_work" msgid="8028189067816907075">"SMS an Fax (geschäftl.)"</string>
+    <string name="sms_fax_home" msgid="9204042076306809634">"SMS an Fax (privat)"</string>
     <string name="sms_pager" msgid="7730404569637015192">"Text-Pager"</string>
     <string name="sms_other" msgid="806127844607642331">"Textnachricht an"</string>
     <string name="sms_callback" msgid="5004824430094288752">"Textnachricht an Rückrufnummer"</string>
@@ -326,23 +337,23 @@
     <string name="sms_radio" msgid="3329166673433967820">"Text (Mobilfunk)"</string>
     <string name="sms_telex" msgid="9034802430065267848">"Textnachricht an Telex"</string>
     <string name="sms_tty_tdd" msgid="6782284969132531532">"Textnachricht an TTY/TDD"</string>
-    <string name="sms_work_mobile" msgid="2459939960512702560">"Textnachricht an Mobilfunknummer (geschäftlich)"</string>
-    <string name="sms_work_pager" msgid="5566924423316960597">"Textnachricht an Pager (geschäftlich)"</string>
+    <string name="sms_work_mobile" msgid="2459939960512702560">"SMS an Handy (geschäftl.)"</string>
+    <string name="sms_work_pager" msgid="5566924423316960597">"SMS an Pager (geschäftl.)"</string>
     <string name="sms_assistant" msgid="2773424339923116234">"Textnachricht an <xliff:g id="ASSISTANT">%s</xliff:g>"</string>
     <string name="sms_mms" msgid="4069352461380762677">"Text (MMS)"</string>
     <string name="email_home" msgid="8573740658148184279">"E-Mail (privat)"</string>
     <string name="email_mobile" msgid="2042889209787989814">"E-Mail (mobil)"</string>
-    <string name="email_work" msgid="2807430017302722689">"E-Mail (Arbeit)"</string>
+    <string name="email_work" msgid="2807430017302722689">"E-Mail (geschäftl.)"</string>
     <string name="email_other" msgid="3454004077967657109">"E-Mail an"</string>
     <string name="email_custom" msgid="7548003991586214105">"E-Mail <xliff:g id="CUSTOM">%s</xliff:g>"</string>
     <string name="email" msgid="5668400997660065897">"E-Mail"</string>
     <string name="map_home" msgid="1243547733423343982">"Privatadresse anzeigen"</string>
-    <string name="map_work" msgid="1360474076921878088">"Arbeitsadresse anzeigen"</string>
+    <string name="map_work" msgid="1360474076921878088">"Geschäftsadresse anzeigen"</string>
     <string name="map_other" msgid="3817820803587012641">"Adresse anzeigen"</string>
     <string name="map_custom" msgid="6184363799976265281">"<xliff:g id="CUSTOM">%s</xliff:g>-Adresse anzeigen"</string>
     <string name="chat_aim" msgid="2588492205291249142">"Chat über AIM"</string>
     <string name="chat_msn" msgid="8041633440091073484">"Chat über Windows Live"</string>
-    <string name="chat_yahoo" msgid="6629211142719943666">"Chat über Yahoo"</string>
+    <string name="chat_yahoo" msgid="6629211142719943666">"Chat über Yahoo!"</string>
     <string name="chat_skype" msgid="1210045020427480566">"Chat über Skype"</string>
     <string name="chat_qq" msgid="4294637812847719693">"Chat über QQ"</string>
     <string name="chat_gtalk" msgid="981575737258117697">"Chat über Google Talk"</string>

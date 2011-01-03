@@ -47,10 +47,12 @@ import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.provider.CallLog;
 import android.provider.CallLog.Calls;
-import android.provider.ContactsContract.Intents.Insert;
-import android.provider.ContactsContract.Contacts;
-import android.provider.ContactsContract.PhoneLookup;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.CommonDataKinds.SipAddress;
+import android.provider.ContactsContract.Contacts;
+import android.provider.ContactsContract.Data;
+import android.provider.ContactsContract.Intents.Insert;
+import android.provider.ContactsContract.PhoneLookup;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.text.SpannableStringBuilder;
@@ -156,7 +158,8 @@ public class RecentCallsListActivity extends ListActivity
     private static final int MENU_ITEM_CLEAR_INCOMING = 4;
     private static final int MENU_ITEM_CLEAR_OUTGOING = 5;
     private static final int MENU_ITEM_CLEAR_MISSED = 6;
-    private static final int MENU_ITEM_DELETE = 7;
+    private static final int CONTEXT_MENU_ITEM_DELETE = 7;
+    private static final int CONTEXT_MENU_CALL_CONTACT = 8;
 
     private static final int QUERY_TOKEN = 53;
     private static final int UPDATE_TOKEN = 54;
@@ -188,6 +191,8 @@ public class RecentCallsListActivity extends ListActivity
     private static final String INSERT_BLACKLIST = "com.android.phone.INSERT_BLACKLIST";
 
     private ContactPhotoLoader mPhotoLoader;
+
+    private boolean mScrollToTop;
 
     static final class ContactInfo {
         public long personId;
@@ -286,6 +291,7 @@ public class RecentCallsListActivity extends ListActivity
         private CharArrayBuffer mBuffer2 = new CharArrayBuffer(128);
 
         public void onClick(View view) {
+<<<<<<< HEAD
             if (view instanceof QuickContactBadge) {
                 PhotoInfo info = (PhotoInfo)view.getTag();
                 QuickContact.showQuickContact(mContext, view, info.contactUri, QuickContact.MODE_MEDIUM, null);
@@ -297,6 +303,21 @@ public class RecentCallsListActivity extends ListActivity
                     Uri telUri = Uri.fromParts("tel", number, null);
                     startActivity(new Intent(Intent.ACTION_CALL_PRIVILEGED, telUri));
                 }
+=======
+            String number = (String) view.getTag();
+            if (!TextUtils.isEmpty(number)) {
+                // Here, "number" can either be a PSTN phone number or a
+                // SIP address.  So turn it into either a tel: URI or a
+                // sip: URI, as appropriate.
+                Uri callUri;
+                if (PhoneNumberUtils.isUriNumber(number)) {
+                    callUri = Uri.fromParts("sip", number, null);
+                } else {
+                    callUri = Uri.fromParts("tel", number, null);
+                }
+                StickyTabs.saveTab(RecentCallsListActivity.this, getIntent());
+                startActivity(new Intent(Intent.ACTION_CALL_PRIVILEGED, callUri));
+>>>>>>> korg/gingerbread
             }
         }
 
@@ -430,6 +451,7 @@ public class RecentCallsListActivity extends ListActivity
             if (info != null && info != ContactInfo.EMPTY) {
                 return true;
             } else {
+<<<<<<< HEAD
                 Cursor phonesCursor =
                     RecentCallsListActivity.this.getContentResolver().query(
                             Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI,
@@ -455,8 +477,105 @@ public class RecentCallsListActivity extends ListActivity
                         mContactInfo.put(ciq.number, info);
                         // Inform list to update this item, if in view
                         needNotify = true;
+=======
+                // Ok, do a fresh Contacts lookup for ciq.number.
+                boolean infoUpdated = false;
+
+                if (PhoneNumberUtils.isUriNumber(ciq.number)) {
+                    // This "number" is really a SIP address.
+
+                    // TODO: This code is duplicated from the
+                    // CallerInfoAsyncQuery class.  To avoid that, could the
+                    // code here just use CallerInfoAsyncQuery, rather than
+                    // manually running ContentResolver.query() itself?
+
+                    // We look up SIP addresses directly in the Data table:
+                    Uri contactRef = Data.CONTENT_URI;
+
+                    // Note Data.DATA1 and SipAddress.SIP_ADDRESS are equivalent.
+                    //
+                    // Also note we use "upper(data1)" in the WHERE clause, and
+                    // uppercase the incoming SIP address, in order to do a
+                    // case-insensitive match.
+                    //
+                    // TODO: May also need to normalize by adding "sip:" as a
+                    // prefix, if we start storing SIP addresses that way in the
+                    // database.
+                    String selection = "upper(" + Data.DATA1 + ")=?"
+                            + " AND "
+                            + Data.MIMETYPE + "='" + SipAddress.CONTENT_ITEM_TYPE + "'";
+                    String[] selectionArgs = new String[] { ciq.number.toUpperCase() };
+
+                    Cursor dataTableCursor =
+                            RecentCallsListActivity.this.getContentResolver().query(
+                                    contactRef,
+                                    null,  // projection
+                                    selection,  // selection
+                                    selectionArgs,  // selectionArgs
+                                    null);  // sortOrder
+
+                    if (dataTableCursor != null) {
+                        if (dataTableCursor.moveToFirst()) {
+                            info = new ContactInfo();
+
+                            // TODO: we could slightly speed this up using an
+                            // explicit projection (and thus not have to do
+                            // those getColumnIndex() calls) but the benefit is
+                            // very minimal.
+
+                            // Note the Data.CONTACT_ID column here is
+                            // equivalent to the PERSON_ID_COLUMN_INDEX column
+                            // we use with "phonesCursor" below.
+                            info.personId = dataTableCursor.getLong(
+                                    dataTableCursor.getColumnIndex(Data.CONTACT_ID));
+                            info.name = dataTableCursor.getString(
+                                    dataTableCursor.getColumnIndex(Data.DISPLAY_NAME));
+                            // "type" and "label" are currently unused for SIP addresses
+                            info.type = SipAddress.TYPE_OTHER;
+                            info.label = null;
+
+                            // And "number" is the SIP address.
+                            // Note Data.DATA1 and SipAddress.SIP_ADDRESS are equivalent.
+                            info.number = dataTableCursor.getString(
+                                    dataTableCursor.getColumnIndex(Data.DATA1));
+
+                            infoUpdated = true;
+                        }
+                        dataTableCursor.close();
                     }
-                    phonesCursor.close();
+                } else {
+                    // "number" is a regular phone number, so use the
+                    // PhoneLookup table:
+                    Cursor phonesCursor =
+                            RecentCallsListActivity.this.getContentResolver().query(
+                                Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI,
+                                                     Uri.encode(ciq.number)),
+                                PHONES_PROJECTION, null, null, null);
+                    if (phonesCursor != null) {
+                        if (phonesCursor.moveToFirst()) {
+                            info = new ContactInfo();
+                            info.personId = phonesCursor.getLong(PERSON_ID_COLUMN_INDEX);
+                            info.name = phonesCursor.getString(NAME_COLUMN_INDEX);
+                            info.type = phonesCursor.getInt(PHONE_TYPE_COLUMN_INDEX);
+                            info.label = phonesCursor.getString(LABEL_COLUMN_INDEX);
+                            info.number = phonesCursor.getString(MATCHED_NUMBER_COLUMN_INDEX);
+
+                            infoUpdated = true;
+                        }
+                        phonesCursor.close();
+>>>>>>> korg/gingerbread
+                    }
+                }
+
+                if (infoUpdated) {
+                    // New incoming phone number invalidates our formatted
+                    // cache. Any cache fills happen only on the GUI thread.
+                    info.formattedNumber = null;
+
+                    mContactInfo.put(ciq.number, info);
+
+                    // Inform list to update this item, if in view
+                    needNotify = true;
                 }
             }
             if (info != null) {
@@ -704,14 +823,49 @@ public class RecentCallsListActivity extends ListActivity
             if (!TextUtils.isEmpty(name)) {
                 views.line1View.setText(name);
                 views.labelView.setVisibility(View.VISIBLE);
+<<<<<<< HEAD
                 CharSequence numberLabel = Phone.getTypeLabel(context.getResources(), ntype, label);
+=======
+
+                // "type" and "label" are currently unused for SIP addresses.
+                CharSequence numberLabel = null;
+                if (!PhoneNumberUtils.isUriNumber(number)) {
+                    numberLabel = Phone.getDisplayLabel(context, ntype, label,
+                            mLabelArray);
+                }
+>>>>>>> korg/gingerbread
                 views.numberView.setVisibility(View.VISIBLE);
                 views.numberView.setText(formattedNumber);
                 if (!TextUtils.isEmpty(numberLabel)) {
                     views.labelView.setText(numberLabel);
                     views.labelView.setVisibility(View.VISIBLE);
+
+                    // Zero out the numberView's left margin (see below)
+                    ViewGroup.MarginLayoutParams numberLP =
+                            (ViewGroup.MarginLayoutParams) views.numberView.getLayoutParams();
+                    numberLP.leftMargin = 0;
+                    views.numberView.setLayoutParams(numberLP);
                 } else {
-                    views.labelView.setVisibility(View.GONE);
+                    // There's nothing to display in views.labelView, so hide it.
+                    // We can't set it to View.GONE, since it's the anchor for
+                    // numberView in the RelativeLayout, so make it INVISIBLE.
+                    //   Also, we need to manually *subtract* some left margin from
+                    // numberView to compensate for the right margin built in to
+                    // labelView (otherwise the number will be indented by a very
+                    // slight amount).
+                    //   TODO: a cleaner fix would be to contain both the label and
+                    // number inside a LinearLayout, and then set labelView *and*
+                    // its padding to GONE when there's no label to display.
+                    views.labelView.setText(null);
+                    views.labelView.setVisibility(View.INVISIBLE);
+
+                    ViewGroup.MarginLayoutParams labelLP =
+                            (ViewGroup.MarginLayoutParams) views.labelView.getLayoutParams();
+                    ViewGroup.MarginLayoutParams numberLP =
+                            (ViewGroup.MarginLayoutParams) views.numberView.getLayoutParams();
+                    // Equivalent to setting android:layout_marginLeft in XML
+                    numberLP.leftMargin = -labelLP.rightMargin;
+                    views.numberView.setLayoutParams(numberLP);
                 }
             } else {
                 if (number.equals(CallerInfo.UNKNOWN_NUMBER)) {
@@ -895,7 +1049,17 @@ public class RecentCallsListActivity extends ListActivity
                 final RecentCallsListActivity.RecentCallsAdapter callsAdapter = activity.mAdapter;
                 callsAdapter.setLoading(false);
                 callsAdapter.changeCursor(cursor);
+<<<<<<< HEAD
                 mRecordCount = cursor.getCount();
+=======
+                if (activity.mScrollToTop) {
+                    if (activity.mList.getFirstVisiblePosition() > 5) {
+                        activity.mList.setSelection(5);
+                    }
+                    activity.mList.smoothScrollToPosition(0);
+                    activity.mScrollToTop = false;
+                }
+>>>>>>> korg/gingerbread
             } else {
                 cursor.close();
             }
@@ -927,6 +1091,12 @@ public class RecentCallsListActivity extends ListActivity
 
         // Reset locale-based formatting cache
         sFormattingType = FORMATTING_TYPE_INVALID;
+    }
+
+    @Override
+    protected void onStart() {
+        mScrollToTop = true;
+        super.onStart();
     }
 
     @Override
@@ -1011,6 +1181,11 @@ public class RecentCallsListActivity extends ListActivity
             return "";
         }
 
+        // If "number" is really a SIP address, don't try to do any formatting at all.
+        if (PhoneNumberUtils.isUriNumber(number)) {
+            return number;
+        }
+
         // Cache formatting type if not already present
         if (sFormattingType == FORMATTING_TYPE_INVALID) {
             sFormattingType = PhoneNumberUtils.getFormatTypeForLocale(Locale.getDefault());
@@ -1081,6 +1256,7 @@ public class RecentCallsListActivity extends ListActivity
         String number = cursor.getString(NUMBER_COLUMN_INDEX);
         Uri numberUri = null;
         boolean isVoicemail = false;
+        boolean isSipNumber = false;
         if (number.equals(CallerInfo.UNKNOWN_NUMBER)) {
             number = getString(R.string.unknown);
         } else if (number.equals(CallerInfo.PRIVATE_NUMBER)) {
@@ -1091,6 +1267,9 @@ public class RecentCallsListActivity extends ListActivity
             number = getString(R.string.voicemail);
             numberUri = Uri.parse("voicemail:x");
             isVoicemail = true;
+        } else if (PhoneNumberUtils.isUriNumber(number)) {
+            numberUri = Uri.fromParts("sip", number, null);
+            isSipNumber = true;
         } else {
             numberUri = Uri.fromParts("tel", number, null);
         }
@@ -1105,24 +1284,38 @@ public class RecentCallsListActivity extends ListActivity
 
         if (numberUri != null) {
             Intent intent = new Intent(Intent.ACTION_CALL_PRIVILEGED, numberUri);
-            menu.add(0, 0, 0, getResources().getString(R.string.recentCalls_callNumber, number))
+            menu.add(0, CONTEXT_MENU_CALL_CONTACT, 0,
+                    getResources().getString(R.string.recentCalls_callNumber, number))
                     .setIntent(intent);
         }
 
         if (contactInfoPresent) {
-            menu.add(0, 0, 0, R.string.menu_viewContact)
-                    .setIntent(new Intent(Intent.ACTION_VIEW,
-                            ContentUris.withAppendedId(Contacts.CONTENT_URI, info.personId)));
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    ContentUris.withAppendedId(Contacts.CONTENT_URI, info.personId));
+            StickyTabs.setTab(intent, getIntent());
+            menu.add(0, 0, 0, R.string.menu_viewContact).setIntent(intent);
         }
 
-        if (numberUri != null && !isVoicemail) {
+        if (numberUri != null && !isVoicemail && !isSipNumber) {
             menu.add(0, 0, 0, R.string.recentCalls_editNumberBeforeCall)
                     .setIntent(new Intent(Intent.ACTION_DIAL, numberUri));
             menu.add(0, 0, 0, R.string.menu_sendTextMessage)
                     .setIntent(new Intent(Intent.ACTION_SENDTO,
                             Uri.fromParts("sms", number, null)));
         }
-        if (!contactInfoPresent && numberUri != null && !isVoicemail) {
+
+        // "Add to contacts" item, if this entry isn't already associated with a contact
+        if (!contactInfoPresent && numberUri != null && !isVoicemail && !isSipNumber) {
+            // TODO: This item is currently disabled for SIP addresses, because
+            // the Insert.PHONE extra only works correctly for PSTN numbers.
+            //
+            // To fix this for SIP addresses, we need to:
+            // - define ContactsContract.Intents.Insert.SIP_ADDRESS, and use it here if
+            //   the current number is a SIP address
+            // - update the contacts UI code to handle Insert.SIP_ADDRESS by
+            //   updating the SipAddress field
+            // and then we can remove the "!isSipNumber" check above.
+
             Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
             intent.setType(Contacts.CONTENT_ITEM_TYPE);
             intent.putExtra(Insert.PHONE, number);
@@ -1130,7 +1323,7 @@ public class RecentCallsListActivity extends ListActivity
                     .setIntent(intent);
 	    menu.add(0, MENU_ITEM_BLACKLIST, 0, R.string.recentCalls_addToBlacklist);
         }
-        menu.add(0, MENU_ITEM_DELETE, 0, R.string.recentCalls_removeFromRecentList);
+        menu.add(0, CONTEXT_MENU_ITEM_DELETE, 0, R.string.recentCalls_removeFromRecentList);
     }
 
     @Override
@@ -1183,18 +1376,18 @@ public class RecentCallsListActivity extends ListActivity
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        // Convert the menu info to the proper type
-        AdapterView.AdapterContextMenuInfo menuInfo;
-        try {
-             menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        } catch (ClassCastException e) {
-            Log.e(TAG, "bad menuInfoIn", e);
-            return false;
-        }
-
-        Cursor cursor = (Cursor)mAdapter.getItem(menuInfo.position);
         switch (item.getItemId()) {
-            case MENU_ITEM_DELETE: {
+            case CONTEXT_MENU_ITEM_DELETE: {
+                // Convert the menu info to the proper type
+                AdapterView.AdapterContextMenuInfo menuInfo;
+                try {
+                     menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                } catch (ClassCastException e) {
+                    Log.e(TAG, "bad menuInfoIn", e);
+                    return false;
+                }
+
+                Cursor cursor = (Cursor)mAdapter.getItem(menuInfo.position);
                 int groupSize = 1;
                 if (mAdapter.isGroupHeader(menuInfo.position)) {
                     groupSize = mAdapter.getGroupSize(menuInfo.position);
@@ -1212,14 +1405,23 @@ public class RecentCallsListActivity extends ListActivity
 
                 getContentResolver().delete(Calls.CONTENT_URI, Calls._ID + " IN (" + sb + ")",
                         null);
-            }break;
-	    case MENU_ITEM_BLACKLIST: {
-	    	Intent intent = new Intent(INSERT_BLACKLIST);
-		intent.putExtra("Insert.BLACKLIST", cursor.getString(NUMBER_COLUMN_INDEX));
-		sendBroadcast(intent);
- 	    }break;
+				break;
+            }
+		    case MENU_ITEM_BLACKLIST: {
+		    	Intent intent = new Intent(INSERT_BLACKLIST);
+				intent.putExtra("Insert.BLACKLIST", cursor.getString(NUMBER_COLUMN_INDEX));
+				sendBroadcast(intent);
+				break;
+			}
+            case CONTEXT_MENU_CALL_CONTACT: {
+                StickyTabs.saveTab(this, getIntent());
+                startActivity(item.getIntent());
+                return true;
+            }
+            default: {
+                return super.onContextItemSelected(item);
+            }
         }
-        return super.onContextItemSelected(item);
     }
 
     @Override
@@ -1320,16 +1522,25 @@ public class RecentCallsListActivity extends ListActivity
                 // This number can't be called, do nothing
                 return;
             }
-
-            int callType = cursor.getInt(CALL_TYPE_COLUMN_INDEX);
-            if (!number.startsWith("+") &&
-                    (callType == Calls.INCOMING_TYPE
-                            || callType == Calls.MISSED_TYPE)) {
-                // If the caller-id matches a contact with a better qualified number, use it
-                number = getBetterNumberFromContacts(number);
+            Intent intent;
+            // If "number" is really a SIP address, construct a sip: URI.
+            if (PhoneNumberUtils.isUriNumber(number)) {
+                intent = new Intent(Intent.ACTION_CALL_PRIVILEGED,
+                                    Uri.fromParts("sip", number, null));
+            } else {
+                // We're calling a regular PSTN phone number.
+                // Construct a tel: URI, but do some other possible cleanup first.
+                int callType = cursor.getInt(CALL_TYPE_COLUMN_INDEX);
+                if (!number.startsWith("+") &&
+                       (callType == Calls.INCOMING_TYPE
+                                || callType == Calls.MISSED_TYPE)) {
+                    // If the caller-id matches a contact with a better qualified number, use it
+                    number = getBetterNumberFromContacts(number);
+                }
+                intent = new Intent(Intent.ACTION_CALL_PRIVILEGED,
+                                    Uri.fromParts("tel", number, null));
             }
-            Intent intent = new Intent(Intent.ACTION_CALL_PRIVILEGED,
-                    Uri.fromParts("tel", number, null));
+            StickyTabs.saveTab(this, getIntent());
             intent.setFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             startActivity(intent);
@@ -1343,6 +1554,7 @@ public class RecentCallsListActivity extends ListActivity
         } else {
             Intent intent = new Intent(this, CallDetailActivity.class);
             intent.setData(ContentUris.withAppendedId(CallLog.Calls.CONTENT_URI, id));
+            StickyTabs.setTab(intent, getIntent());
             startActivity(intent);
         }
     }

@@ -1059,6 +1059,13 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        mContactsPrefs.registerChangeListener(mPreferencesChangeListener);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         unregisterProviderStatusObserver();
@@ -1246,6 +1253,7 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
     protected void onStop() {
         super.onStop();
 
+        mContactsPrefs.unregisterChangeListener();
         mAdapter.setSuggestionsCursor(null);
         mAdapter.changeCursor(null);
 
@@ -1599,7 +1607,8 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
             case SUBACTIVITY_NEW_CONTACT:
                 if (resultCode == RESULT_OK) {
                     returnPickerResult(null, data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME),
-                            data.getData());
+                            data.getData(), (mMode & MODE_MASK_PICKER) != 0
+                            ? Intent.FLAG_GRANT_READ_URI_PERMISSION : 0);
                 }
                 break;
 
@@ -1655,13 +1664,14 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
         menu.setHeaderTitle(cursor.getString(getSummaryDisplayNameColumnIndex()));
 
         // View contact details
+        final Intent viewContactIntent = new Intent(Intent.ACTION_VIEW, contactUri);
+        StickyTabs.setTab(viewContactIntent, getIntent());
         menu.add(0, MENU_ITEM_VIEW_CONTACT, 0, R.string.menu_viewContact)
-                .setIntent(new Intent(Intent.ACTION_VIEW, contactUri));
+                .setIntent(viewContactIntent);
 
         if (cursor.getInt(SUMMARY_HAS_PHONE_COLUMN_INDEX) != 0) {
             // Calling contact
-            menu.add(0, MENU_ITEM_CALL, 0,
-                    getString(R.string.menu_call));
+            menu.add(0, MENU_ITEM_CALL, 0, getString(R.string.menu_call));
             // Send SMS item
             menu.add(0, MENU_ITEM_SEND_SMS, 0, getString(R.string.menu_sendSMS));
         }
@@ -1908,9 +1918,10 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
             final Uri uri = getSelectedUri(position);
             if ((mMode & MODE_MASK_PICKER) == 0) {
                 final Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                StickyTabs.setTab(intent, getIntent());
                 startActivityForResult(intent, SUBACTIVITY_VIEW_CONTACT);
             } else if (mMode == MODE_JOIN_CONTACT) {
-                returnPickerResult(null, null, uri);
+                returnPickerResult(null, null, uri, 0);
             } else if (mMode == MODE_QUERY_PICK_TO_VIEW) {
                 // Started with query that should launch to view contact
                 final Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -1918,14 +1929,16 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
                 finish();
             } else if (mMode == MODE_PICK_PHONE || mMode == MODE_QUERY_PICK_PHONE) {
                 Cursor c = (Cursor) mAdapter.getItem(position);
-                returnPickerResult(c, c.getString(PHONE_DISPLAY_NAME_COLUMN_INDEX), uri);
+                returnPickerResult(c, c.getString(PHONE_DISPLAY_NAME_COLUMN_INDEX), uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } else if ((mMode & MODE_MASK_PICKER) != 0) {
                 Cursor c = (Cursor) mAdapter.getItem(position);
-                returnPickerResult(c, c.getString(getSummaryDisplayNameColumnIndex()), uri);
+                returnPickerResult(c, c.getString(getSummaryDisplayNameColumnIndex()), uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } else if (mMode == MODE_PICK_POSTAL
                     || mMode == MODE_LEGACY_PICK_POSTAL
                     || mMode == MODE_LEGACY_PICK_PHONE) {
-                returnPickerResult(null, null, uri);
+                returnPickerResult(null, null, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             }
         } else {
             signalError();
@@ -1943,7 +1956,7 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
      * @param selectedUri In most cases, this should be a lookup {@link Uri}, possibly
      *            generated through {@link Contacts#getLookupUri(long, String)}.
      */
-    private void returnPickerResult(Cursor c, String name, Uri selectedUri) {
+    private void returnPickerResult(Cursor c, String name, Uri selectedUri, int uriPerms) {
         final Intent intent = new Intent();
 
         if (mShortcutAction != null) {
@@ -1995,6 +2008,7 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
             setResult(RESULT_OK, intent);
         } else {
             intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
+            intent.addFlags(uriPerms);
             setResult(RESULT_OK, intent.setData(selectedUri));
         }
         finish();
@@ -2739,12 +2753,13 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
                 if (phone == null) {
                     // Display dialog to choose a number to call.
                     PhoneDisambigDialog phoneDialog = new PhoneDisambigDialog(
-                            this, phonesCursor, sendSms);
+                            this, phonesCursor, sendSms, StickyTabs.getTab(getIntent()));
                     phoneDialog.show();
                 } else {
                     if (sendSms) {
                         ContactsUtils.initiateSms(this, phone);
                     } else {
+                        StickyTabs.saveTab(this, getIntent());
                         ContactsUtils.initiateCall(this, phone);
                     }
                 }
@@ -2765,8 +2780,11 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
                 new String[] {Phone._ID, Phone.NUMBER, Phone.IS_SUPER_PRIMARY,
                         RawContacts.ACCOUNT_TYPE, Phone.TYPE, Phone.LABEL},
                 Data.MIMETYPE + "=?", new String[] {Phone.CONTENT_ITEM_TYPE}, null);
-        if (c != null && c.moveToFirst()) {
-            return c;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                return c;
+            }
+            c.close();
         }
         return null;
     }
@@ -3348,6 +3366,7 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
                     final String lookupKey = cursor.getString(SUMMARY_LOOKUP_KEY_COLUMN_INDEX);
                     QuickContactBadge quickContact = view.getQuickContact();
                     quickContact.assignContactUri(Contacts.getLookupUri(contactId, lookupKey));
+                    quickContact.setSelectedContactsAppTabIndex(StickyTabs.getTab(getIntent()));
                     viewToUse = quickContact;
                 } else {
                     viewToUse = view.getPhotoView();
@@ -3842,4 +3861,14 @@ public class ContactsListActivity extends ListActivity implements View.OnCreateC
             } while(c.moveToNext());
         }
     }
+
+    private ContactsPreferences.ChangeListener mPreferencesChangeListener =
+            new ContactsPreferences.ChangeListener() {
+        @Override
+        public void onChange() {
+            // When returning from DisplayOptions, onActivityResult ensures that we reload the list,
+            // so we do not have to do anything here. However, ContactsPreferences requires a change
+            // listener, otherwise it would not reload its settings.
+        }
+    };
 }

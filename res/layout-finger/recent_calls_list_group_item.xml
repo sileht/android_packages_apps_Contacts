@@ -75,7 +75,6 @@
         android:layout_marginTop="-10dip"
         android:layout_marginLeft="10dip"
         android:layout_alignWithParentIfMissing="true"
-
         android:singleLine="true"
         android:ellipsize="marquee"
         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -85,7 +84,6 @@
     <TextView android:id="@+id/number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dip"
         android:layout_toRightOf="@id/label"
         android:layout_toLeftOf="@id/date"
         android:layout_alignBaseline="@id/label"

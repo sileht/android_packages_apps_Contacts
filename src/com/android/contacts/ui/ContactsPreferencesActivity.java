@@ -245,7 +245,6 @@ public final class ContactsPreferencesActivity extends ExpandableListActivity im
         };
 
         return new AlertDialog.Builder(this)
-            .setIcon(com.android.internal.R.drawable.ic_dialog_menu_generic)
             .setTitle(R.string.display_options_sort_list_by)
             .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -264,7 +263,6 @@ public final class ContactsPreferencesActivity extends ExpandableListActivity im
         };
 
         return new AlertDialog.Builder(this)
-            .setIcon(com.android.internal.R.drawable.ic_dialog_menu_generic)
             .setTitle(R.string.display_options_view_names_as)
             .setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -845,7 +843,7 @@ public final class ContactsPreferencesActivity extends ExpandableListActivity im
 
         Editor editor = mPrefs.edit();
         editor.putBoolean(Prefs.DISPLAY_ONLY_PHONES, displayOnlyPhones);
-        editor.commit();
+        editor.apply();
 
         mAdapter.setChildDescripWithPhones(displayOnlyPhones);
         mAdapter.notifyDataSetChanged();

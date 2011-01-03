@@ -20,6 +20,7 @@ import com.android.contacts.Collapser;
 import com.android.contacts.ContactPresenceIconUtil;
 import com.android.contacts.ContactsUtils;
 import com.android.contacts.R;
+import com.android.contacts.StickyTabs;
 import com.android.contacts.model.ContactsSource;
 import com.android.contacts.model.Sources;
 import com.android.contacts.model.ContactsSource.DataKind;
@@ -55,6 +56,7 @@ import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
+import android.provider.ContactsContract.CommonDataKinds.SipAddress;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.text.TextUtils;
@@ -156,6 +158,9 @@ public class QuickContactWindow implements Window.Callback,
     private OnDismissListener mDismissListener;
     private ResolveCache mResolveCache;
 
+    /** Last selected tab of the Dialtacs-Activity. This is -1 if not called out of contacts app */
+    private int mLastSelectedContactsAppTab;
+
     private Uri mLookupUri;
     private Rect mAnchor;
 
@@ -217,6 +222,7 @@ public class QuickContactWindow implements Window.Callback,
      */
     private static final String[] PRECEDING_MIMETYPES = new String[] {
             Phone.CONTENT_ITEM_TYPE,
+            SipAddress.CONTENT_ITEM_TYPE,
             Contacts.CONTENT_ITEM_TYPE,
             Constants.MIME_SMS_ADDRESS,
             Email.CONTENT_ITEM_TYPE,
@@ -317,6 +323,10 @@ public class QuickContactWindow implements Window.Callback,
     public QuickContactWindow(Context context, OnDismissListener dismissListener) {
         this(context);
         mDismissListener = dismissListener;
+    }
+
+    public void setLastSelectedContactsAppTab(int value) {
+        mLastSelectedContactsAppTab = value;
     }
 
     private View getHeaderView(int mode) {
@@ -770,7 +780,18 @@ public class QuickContactWindow implements Window.Callback,
                     final Uri callUri = Uri.fromParts(Constants.SCHEME_TEL, number, null);
                     mIntent = new Intent(Intent.ACTION_CALL_PRIVILEGED, callUri);
                 }
-
+            } else if (SipAddress.CONTENT_ITEM_TYPE.equals(mimeType)) {
+                final String address = getAsString(cursor, SipAddress.SIP_ADDRESS);
+                if (!TextUtils.isEmpty(address)) {
+                    final Uri callUri = Uri.fromParts(Constants.SCHEME_SIP, address, null);
+                    mIntent = new Intent(Intent.ACTION_CALL_PRIVILEGED, callUri);
+                    // Note that this item will get a SIP-specific variant
+                    // of the "call phone" icon, rather than the standard
+                    // app icon for the Phone app (which we show for
+                    // regular phone numbers.)  That's because the phone
+                    // app explicitly specifies an android:icon attribute
+                    // for the SIP-related intent-filters in its manifest.
+                }
             } else if (Constants.MIME_SMS_ADDRESS.equals(mimeType)) {
                 final String number = getAsString(cursor, Phone.NUMBER);
                 if (!TextUtils.isEmpty(number)) {
@@ -1422,6 +1443,10 @@ public class QuickContactWindow implements Window.Callback,
             // Incoming tag is concrete intent, so try launching
             final Action action = (Action)tag;
             final boolean makePrimary = mMakePrimary;
+
+            if (Intent.ACTION_CALL_PRIVILEGED.equals(action.getIntent().getAction())) {
+                StickyTabs.saveTab(mContext, mLastSelectedContactsAppTab);
+            }
 
             try {
                 mContext.startActivity(action.getIntent());

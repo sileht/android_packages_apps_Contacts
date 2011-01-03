@@ -68,6 +68,7 @@ import android.provider.ContactsContract.CommonDataKinds.Nickname;
 import android.provider.ContactsContract.CommonDataKinds.Note;
 import android.provider.ContactsContract.CommonDataKinds.Organization;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.CommonDataKinds.SipAddress;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 import android.provider.ContactsContract.CommonDataKinds.Website;
 import android.telephony.PhoneNumberUtils;
@@ -119,6 +120,7 @@ public class ViewContactActivity extends Activity
     private static final int REQUEST_EDIT_CONTACT = 2;
 
     public static final int MENU_ITEM_MAKE_DEFAULT = 3;
+    public static final int MENU_ITEM_CALL = 4;
 
     protected Uri mLookupUri;
     private ContentResolver mResolver;
@@ -228,6 +230,7 @@ public class ViewContactActivity extends Activity
         mContactHeaderWidget.setExcludeMimes(new String[] {
             Contacts.CONTENT_ITEM_TYPE
         });
+        mContactHeaderWidget.setSelectedContactsAppTabIndex(StickyTabs.getTab(getIntent()));
 
         mHandler = new NotifyingAsyncQueryHandler(this, this);
 
@@ -583,7 +586,7 @@ public class ViewContactActivity extends Activity
         ViewEntry entry = ContactEntryAdapter.getEntry(mSections, info.position, SHOW_SEPARATORS);
         menu.setHeaderTitle(R.string.contactOptionsTitle);
         if (entry.mimetype.equals(CommonDataKinds.Phone.CONTENT_ITEM_TYPE)) {
-            menu.add(0, 0, 0, R.string.menu_call).setIntent(entry.intent);
+            menu.add(0, MENU_ITEM_CALL, 0, R.string.menu_call).setIntent(entry.intent);
             menu.add(0, 0, 0, R.string.menu_sendSMS).setIntent(entry.secondaryIntent);
             if (!entry.isPrimary) {
                 menu.add(0, MENU_ITEM_MAKE_DEFAULT, 0, R.string.menu_makeDefaultNumber);
@@ -666,14 +669,18 @@ public class ViewContactActivity extends Activity
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_ITEM_MAKE_DEFAULT: {
-                if (makeItemDefault(item)) {
-                    return true;
-                }
-                break;
+                makeItemDefault(item);
+                return true;
+            }
+            case MENU_ITEM_CALL: {
+                StickyTabs.saveTab(this, getIntent());
+                startActivity(item.getIntent());
+                return true;
+            }
+            default: {
+                return super.onContextItemSelected(item);
             }
         }
-
-        return super.onContextItemSelected(item);
     }
 
     private boolean makeItemDefault(MenuItem item) {
@@ -798,9 +805,10 @@ public class ViewContactActivity extends Activity
                 int index = mListView.getSelectedItemPosition();
                 if (index != -1) {
                     ViewEntry entry = ViewAdapter.getEntry(mSections, index, SHOW_SEPARATORS);
-                    if (entry != null &&
+                    if (entry != null && entry.intent != null &&
                             entry.intent.getAction() == Intent.ACTION_CALL_PRIVILEGED) {
                         startActivity(entry.intent);
+                        StickyTabs.saveTab(this, getIntent());
                         return true;
                     }
 
@@ -810,6 +818,7 @@ public class ViewContactActivity extends Activity
                     final Intent intent = new Intent(Intent.ACTION_CALL_PRIVILEGED,
                             mPrimaryPhoneUri);
                     startActivity(intent);
+                    StickyTabs.saveTab(this, getIntent());
                     return true;
                 } else if (mNumPhoneNumbers != 0) {
                     // There isn't anything selected; pick the correct number to dial.
@@ -845,6 +854,9 @@ public class ViewContactActivity extends Activity
         if (entry != null) {
             Intent intent = entry.intent;
             if (intent != null) {
+                if (Intent.ACTION_CALL_PRIVILEGED.equals(intent.getAction())) {
+                    StickyTabs.saveTab(this, getIntent());
+                }
                 try {
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
@@ -1045,7 +1057,7 @@ public class ViewContactActivity extends Activity
                         entry.maxLines = 100;
                         mOtherEntries.add(entry);
                     } else if (Website.CONTENT_ITEM_TYPE.equals(mimeType) && hasData) {
-                        // Build note entries
+                        // Build Website entries
                         entry.uri = null;
                         entry.maxLines = 10;
                         try {
@@ -1056,6 +1068,19 @@ public class ViewContactActivity extends Activity
                             Log.e(TAG, "Couldn't parse website: " + entry.data);
                         }
                         mOtherEntries.add(entry);
+                    } else if (SipAddress.CONTENT_ITEM_TYPE.equals(mimeType) && hasData) {
+                        // Build SipAddress entries
+                        entry.uri = null;
+                        entry.maxLines = 1;
+                        entry.intent = new Intent(Intent.ACTION_CALL_PRIVILEGED,
+                                Uri.fromParts(Constants.SCHEME_SIP, entry.data, null));
+                        mOtherEntries.add(entry);
+                        // TODO: Consider moving the SipAddress into its own
+                        // section (rather than lumping it in with mOtherEntries)
+                        // so that we can reposition it right under the phone number.
+                        // (Then, we'd also update FallbackSource.java to set
+                        // secondary=false for this field, and tweak the weight
+                        // of its DataKind.)
                     } else {
                         // Handle showing custom rows
                         entry.intent = new Intent(Intent.ACTION_VIEW, entry.uri);
